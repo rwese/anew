@@ -1,6 +1,6 @@
 [package]
 name = "anew"
-description = "Rust re-implementation"
+description = "Tool to append unique lines to files - Rust re-implementation of tomnomnom's anew"
 license = "MIT"
 authors = ["wese"]
 version = "0.2.3"
