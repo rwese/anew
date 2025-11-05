@@ -18,16 +18,15 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        toolchain: [stable, beta, nightly]
+      fail-fast: false
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
       - name: Set up Rust
-        uses: actions-rs/toolchain@v1.0.6
+        uses: dtolnay/rust-toolchain@stable
         with:
-          toolchain: ${{ matrix.toolchain }}
           components: clippy
 
       - name: Cache Cargo registry
@@ -53,6 +52,7 @@ jobs:
         run: cargo test --all-features --verbose
 
   create-release:
+    needs: [lint-and-test]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -61,6 +61,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
   upload-assets:
+    needs: [lint-and-test]
     strategy:
       matrix:
         os:
@@ -71,17 +72,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: stable
-          default: true
-
-      - name: Run Clippy (Lint)
-        run: cargo clippy --all-targets --all-features -- -D warnings
-
-      - name: Run tests
-        run: cargo test --all-features --verbose
+      - uses: dtolnay/rust-toolchain@stable
 
       - uses: taiki-e/upload-rust-binary-action@v1
         with:
