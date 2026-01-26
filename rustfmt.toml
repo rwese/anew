@@ -1,0 +1,16 @@
+# rustfmt configuration for anew project
+
+# Use 4 spaces for indentation
+tab_spaces = 4
+
+# Maximum line width
+max_width = 100
+
+# Reorder imports alphabetically
+reorder_imports = true
+
+# Reorder modules in a logical order
+reorder_modules = true
+
+# Required for edition 2021
+edition = "2021"

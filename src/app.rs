@@ -1,6 +1,6 @@
-use std::fs::{File, OpenOptions};
-use std::io::{BufRead, Write};
-use std::{fs, io};
+use std::fs;
+use std::fs::OpenOptions;
+use std::io::{self, BufRead, Write};
 
 use clap::Parser;
 use indexmap::IndexSet;
@@ -46,10 +46,7 @@ where
 {
     let filepath = &args.filepath;
 
-    let mut existing_lines = match load_file(&args) {
-        Ok(value) => value,
-        Err(value) => Err(value)?,
-    };
+    let mut existing_lines = load_file(&args)?;
 
     if !args.dry_run && args.rewrite {
         let mut f = OpenOptions::new()
@@ -57,11 +54,10 @@ where
             .truncate(true)
             .write(true)
             .create(true)
-            .open(filepath)
-            .expect("failed to open file");
+            .open(filepath)?;
 
         for line in existing_lines.iter() {
-            writeln!(f, "{}", line).expect("failed to write to file");
+            writeln!(f, "{}", line)?;
         }
 
         drop(f);
@@ -82,26 +78,16 @@ where
         existing_lines.insert(line.to_string());
 
         if !args.quiet_mode {
-            writeln!(output_writer, "{}", line).expect("failed to write to output");
+            writeln!(output_writer, "{}", line)?;
         }
 
         if !args.dry_run {
-            let mut f: Option<File> = None;
+            let mut f = OpenOptions::new()
+                .append(true)
+                .create(true)
+                .open(filepath)?;
 
-            if f.is_none() {
-                f = Some(
-                    OpenOptions::new()
-                        .append(true)
-                        .create(true)
-                        .open(filepath)
-                        .expect("failed to open file"),
-                );
-            }
-
-            let mut f = f.unwrap();
-            writeln!(f, "{}", line).expect("failed to write to file");
-
-            drop(f);
+            writeln!(f, "{}", line)?;
         }
     }
 
@@ -110,8 +96,7 @@ where
             .append(false)
             .write(true)
             .create(false)
-            .open(&args.filepath)
-            .expect("failed to open file");
+            .open(&args.filepath)?;
 
         existing_lines.sort_by(|a, b| natord::compare_ignore_case(a.as_str(), b.as_str()));
 
@@ -195,4 +180,3 @@ fn test_basic_write_twice_the_same() {
     let result_output = String::from_utf8(output).expect("Not UTF-8");
     assert_eq!("".as_bytes(), result_output.as_bytes());
 }
-

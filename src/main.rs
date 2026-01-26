@@ -2,7 +2,7 @@ mod app;
 
 use std::io;
 
-fn main() {
+fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args = app::args();
 
     let stdio = io::stdin();
@@ -10,10 +10,7 @@ fn main() {
 
     let output = io::stdout();
 
-    let result = app::app(args, output, input);
-    match result {
-        Ok(_) => {}
-        Err(err) => panic!("{}", err),
-    }
-}
+    app::app(args, output, input)?;
 
+    Ok(())
+}

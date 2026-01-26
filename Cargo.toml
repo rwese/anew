@@ -9,10 +9,10 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-clap = { version = "4.5.38", features = ["derive"] }
-indexmap = "2.9.0"
+clap = { version = "4.5.54", features = ["derive"] }
+indexmap = "2.13.0"
 natord = "1.0.9"
-testfile = "0.1.4"
+testfile = "0.1.5"
 
 [profile.release]
 strip = true
